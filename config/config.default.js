@@ -39,7 +39,7 @@ module.exports = appInfo => {
     dialect: 'mysql',
     host: '127.0.0.1',
     username: 'root',
-    password: 'root',
+    password: '123456abc',
     port: 3306,
     database: 'blogapi',
     // 中国时区
@@ -55,8 +55,8 @@ module.exports = appInfo => {
       updatedAt: 'updated_at',
       deletedAt: 'deleted_at',
       // 所有驼峰命名格式化
-      underscored: true
-    }
+      underscored: true,
+    },
   };
   config.jwt = {
     secret: 'liku-blog',

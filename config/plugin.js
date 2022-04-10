@@ -10,7 +10,7 @@ module.exports = {
     enable: true,
     package: 'egg-cors',
   },
-  sequelize :{
+  sequelize: {
     enable: true,
     package: 'egg-sequelize',
   },

@@ -1,0 +1,69 @@
+'use strict';
+
+const BaseController = require('../base');
+
+class articleListController extends BaseController {
+  // 获取文章列表
+  async getPagesList() {
+    const {
+      service,
+      ctx,
+    } = this;
+    const pageSize = parseInt(ctx.query.pageSize) || 10;
+    const pageNum = parseInt(ctx.query.pageNum) || 1;
+    const title = ctx.query.title;
+    const result = await service.frontEnd.articleList.findAll(pageSize, pageNum, title);
+    if (result) {
+      this.success(result, 'OK');
+
+    } else {
+      this.error('获取文章列表失败', 10001);
+    }
+  }
+  // 文章，分类，标签总数
+  async typeCount() {
+    const {
+      service,
+    } = this;
+    const result = await service.frontEnd.articleList.typeCountRiightSider();
+    if (result) {
+      this.success(result, 'OK');
+    } else {
+      this.error('获取主页右侧数据失败', 10001);
+    }
+  }
+  // 获取文章详情
+  async getArticleById() {
+    const {
+      service,
+      ctx,
+    } = this;
+    const id = ctx.query.id;
+    const pwd = ctx.query.pwd;
+    const result = await service.frontEnd.articleList.getArticleById(id, pwd);
+    if (result.status) {
+      this.success(result.data, 'OK');
+    } else {
+      this.error(result.data, 10002);
+    }
+  }
+  // 私密文章验证
+  async checkPwd() {
+    const {
+      service,
+      ctx,
+    } = this;
+    const {
+      id,
+      pwd,
+    } = ctx.request.body;
+    const result = await service.frontEnd.articleList.checkPwd(id, pwd);
+    if (result.status) {
+      this.success(result.data, 'OK');
+    } else {
+      this.error(result.data, 10002);
+    }
+  }
+}
+
+module.exports = articleListController;
