@@ -16,5 +16,12 @@ module.exports = app => {
   router.get(`/${urlPrefix}/articleList/getArticleById`, controller.frontEnd.articleList.getArticleById);
   // 私密文章验证
   router.post(`/${urlPrefix}/articleList/checkPwd`, controller.frontEnd.articleList.checkPwd);
-
+  // 关于
+  router.get(`/${urlPrefix}/articleList/about`, controller.frontEnd.articleList.about);
+  // say
+  router.get(`/${urlPrefix}/articleList/say`, controller.frontEnd.articleList.say);
+  // classList
+  router.get(`/${urlPrefix}/articleList/classList`, controller.frontEnd.articleList.classList);
+  // classListDetail
+  router.get(`/${urlPrefix}/articleList/classListDetail`, controller.frontEnd.articleList.classListDetail);
 };

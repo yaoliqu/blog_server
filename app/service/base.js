@@ -1,26 +1,45 @@
 // app/service/base.js
 
 'use strict';
-const { Op } = require('sequelize');
+const {
+  Op,
+} = require('sequelize');
 const Service = require('egg').Service;
 
 class BaseService extends Service {
   // 查询数据
-  async _findAll(modelName) {
+  async _findAll(modelName, type) {
     const {
       ctx,
     } = this;
+    const order = [ 'id', 'DESC' ];
     try {
       return await ctx.model[modelName].findAll({
         order: [
-          [ 'id', 'DESC' ],
+          type ? [ 'date', 'DESC' ] : order,
         ],
+        raw: true,
       });
     } catch (error) {
       return 'Server error';
     }
   }
-
+  // 分组
+  async _findAll_group(modelName, type) {
+    const {
+      ctx,
+      app,
+    } = this;
+    try {
+      return await ctx.model[modelName].findAll({
+        attributes: [ type, [ app.Sequelize.fn('COUNT', app.Sequelize.col(type)), 'count' ]],
+        group: type,
+        raw: true,
+      });
+    } catch (error) {
+      return 'Server error';
+    }
+  }
   // 查询数据总数
   async _count(modelName) {
     const {
@@ -125,29 +144,36 @@ class BaseService extends Service {
     }
   }
   // 分页查询
-  async _findAllBypage(modelName, pageSize, pageNum, title) {
+  async _findAllBypage(modelName, pageSize, pageNum, title, isClasses) {
     const {
       ctx,
     } = this;
     const where = {};
-    if (title) {
-      where.title = {
-        [Op.like]: '%' + title + '%',
+    if (isClasses) {
+      where.classes = {
+        [Op.eq]: title,
       };
+    } else {
+      if (title && !isClasses) {
+        where.title = {
+          [Op.like]: '%' + title + '%',
+        };
+      }
     }
+    console.log(where);
     try {
-      return await ctx.model[modelName].findAndCountAll(
-        {
-          order: [
-            [ 'id', 'DESC' ],
-          ],
-          attributes: { exclude: [ 'pwd' ] },
-          where,
-          limit: pageSize, // 每页多少条
-          offset: pageSize * (pageNum - 1),
-          raw: true,
-        }
-      );
+      return await ctx.model[modelName].findAndCountAll({
+        order: [
+          [ 'id', 'DESC' ],
+        ],
+        attributes: {
+          exclude: [ 'pwd' ],
+        },
+        where,
+        limit: pageSize, // 每页多少条
+        offset: pageSize * (pageNum - 1),
+        raw: true,
+      });
     } catch (error) {
       return 'Server error';
     }

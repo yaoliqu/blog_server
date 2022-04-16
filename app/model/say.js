@@ -1,13 +1,16 @@
 'use strict';
 module.exports = app => {
   const { STRING, INTEGER } = app.Sequelize;
-  const DescribeList = app.model.define('describeList', {
+  const sayList = app.model.define('say', {
     id: { type: INTEGER(11), primaryKey: true },
     content: STRING(255),
-  }, {
+    date: STRING(255),
+    isshow: INTEGER(11),
+  },
+  {
     timestamps: false, // 自动增加创建时间
-    tableName: 'describeList', // 设置表名称
+    tableName: 'say', // 设置表名称
   });
-  return DescribeList;
+  return sayList;
 };
 

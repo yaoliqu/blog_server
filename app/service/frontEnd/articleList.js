@@ -6,8 +6,8 @@ const Md5 = require('js-md5');
 const salt = 'liku';
 class articleList extends BaseService {
   // 查询所有数据
-  async findAll(pageSize, pageNum, title) {
-    const result = await this._findAllBypage('Articlelist', pageSize, pageNum, title);
+  async findAll(pageSize, pageNum, title, isClasses) {
+    const result = await this._findAllBypage('Articlelist', pageSize, pageNum, title, isClasses);
     const content = '该文章暂无公开访问权限~';
     const list = result.rows.length ? result.rows.map(i => {
       if (!i.isshow) {
@@ -63,7 +63,7 @@ class articleList extends BaseService {
     }
     return { status: 0, data: '无权限' };
   }
-
+  // 私密文章验证
   async checkPwd(id, pwd) {
     if (!id || !pwd) return { status: 0, data: '参数有误' };
     const result = await this._findById('Articlelist', id);
@@ -71,6 +71,25 @@ class articleList extends BaseService {
       return { status: 1, data: result.pwd };
     }
     return { status: 0, data: '密码错误' };
+  }
+
+  // 关于
+  async about() {
+    const result = await this._findAll('About');
+    if (!Array.isArray(result)) return '';
+    return result;
+  }
+  // say
+  async say() {
+    const result = await this._findAll('Say', 'date');
+    if (!Array.isArray(result)) return '';
+    return result.filter(i => i.isshow);
+  }
+  // classList
+  async classList() {
+    const result = await this._findAll_group('Articlelist', 'classes');
+    if (!Array.isArray(result)) return '';
+    return result;
   }
 }
 
