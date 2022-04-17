@@ -18,7 +18,7 @@ class BaseService extends Service {
         order: [
           type ? [ 'date', 'DESC' ] : order,
         ],
-        raw: true,
+        // raw: true,
       });
     } catch (error) {
       return 'Server error';
@@ -59,7 +59,10 @@ class BaseService extends Service {
     } = this;
     try {
       const result = await ctx.model[modelName].findByPk(id, {
-        raw: true,
+        // raw: true,
+        include: [
+          { model: ctx.model.Tags, attributes: [ 'id', 'tag' ] },
+        ],
       });
       return result;
     } catch (error) {
@@ -147,6 +150,7 @@ class BaseService extends Service {
   async _findAllBypage(modelName, pageSize, pageNum, title, isClasses) {
     const {
       ctx,
+
     } = this;
     const where = {};
     if (isClasses) {
@@ -160,11 +164,13 @@ class BaseService extends Service {
         };
       }
     }
-    console.log(where);
     try {
       return await ctx.model[modelName].findAndCountAll({
         order: [
           [ 'id', 'DESC' ],
+        ],
+        include: [
+          { model: ctx.model.Tags, attributes: [ 'id', 'tag' ] },
         ],
         attributes: {
           exclude: [ 'pwd' ],
@@ -172,11 +178,69 @@ class BaseService extends Service {
         where,
         limit: pageSize, // 每页多少条
         offset: pageSize * (pageNum - 1),
-        raw: true,
+        // raw: true,
       });
     } catch (error) {
       return 'Server error';
     }
+  }
+  // 分页查询标签
+  async _findAllBypage_tag(modelName, pageSize, pageNum, id) {
+    const {
+      ctx,
+    } = this;
+    try {
+      const res = await ctx.model[modelName].findAndCountAll({
+        // order: [
+        //   [ 'id', 'DESC' ],
+        // ],
+        // attributes: {
+        //   exclude: [ 'pwd' ],
+        // },
+        where: { tagid: id },
+        limit: pageSize, // 每页多少条
+        offset: pageSize * (pageNum - 1),
+        raw: true,
+      });
+      const total = res.count;
+      const selectId = res.rows.length ? res.rows.map(i => ({ id: i.artid })) : [];
+      const data = await ctx.model.Articlelist.findAll({
+        where: {
+          [Op.or]: selectId },
+        raw: true,
+        attributes: {
+          exclude: [ 'pwd' ],
+        },
+      });
+      return {
+        list: data, total, pageSize, pageNum,
+      };
+    } catch (error) {
+      console.log(error);
+      return 'Server error';
+    }
+  }
+  // 关联关系 artTag
+  async _connect() {
+    const {
+      ctx,
+    } = this;
+    ctx.model.Articlelist.belongsToMany(ctx.model.Tags, {
+      through: {
+        model: ctx.model.ArtTag,
+        unique: false,
+      },
+      foreignKey: 'artid', // 经过外键postId
+      constraints: false,
+    });
+    ctx.model.Tags.belongsToMany(ctx.model.Articlelist, {
+      through: {
+        model: ctx.model.ArtTag,
+        unique: false,
+      },
+      foreignKey: 'tagid', // 经过外键tagId
+      constraints: false,
+    });
   }
 }
 

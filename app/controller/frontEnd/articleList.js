@@ -116,6 +116,33 @@ class articleListController extends BaseController {
       this.error('获取文章列表失败', 10001);
     }
   }
+  // getTagsList
+  async getTagsList() {
+    const {
+      service,
+    } = this;
+    const result = await service.frontEnd.articleList.getTagsList();
+    if (result) {
+      this.success(result, 'OK');
+    } else {
+      this.error('getTagsList', 10001);
+    }
+  }
+  // getTagsListdetail
+  async getTagsListdetail() {
+    const {
+      service,
+      ctx,
+    } = this;
+    const pageSize = parseInt(ctx.query.pageSize) || 10;
+    const pageNum = parseInt(ctx.query.pageNum) || 1;
+    const id = ctx.query.tagId;
+    const result = await service.frontEnd.articleList.findAllBytag(pageSize, pageNum, id);
+    if (!Array.isArray(result.list)) {
+      return this.error('获取标签列表失败', 10001);
+    }
+    this.success(result, 'OK');
+  }
 }
 
 module.exports = articleListController;

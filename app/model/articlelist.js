@@ -15,7 +15,6 @@ module.exports = app => {
     date: STRING(255),
     title: STRING(255),
     url: STRING(255),
-    tags: STRING(255),
     updatetime: STRING(255),
     isshow: INTEGER(11),
     pwd: STRING(255),
@@ -23,5 +22,13 @@ module.exports = app => {
     timestamps: false, // 自动增加创建时间
     tableName: 'articlelist', // 设置表名称
   });
+  Articlelist.associate = function() {
+    app.model.Articlelist.belongsToMany(app.model.Tags, {
+      through: app.model.ArtTag,
+      foreignKey: 'artid', // 注意写法
+      otherKey: 'tagid',
+    });
+  };
+
   return Articlelist;
 };

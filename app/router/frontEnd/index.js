@@ -24,4 +24,8 @@ module.exports = app => {
   router.get(`/${urlPrefix}/articleList/classList`, controller.frontEnd.articleList.classList);
   // classListDetail
   router.get(`/${urlPrefix}/articleList/classListDetail`, controller.frontEnd.articleList.classListDetail);
+  // TagsList
+  router.get(`/${urlPrefix}/articleList/getTagsList`, controller.frontEnd.articleList.getTagsList);
+  // getTagsListdetail
+  router.get(`/${urlPrefix}/articleList/getTagsListdetail`, controller.frontEnd.articleList.getTagsListdetail);
 };

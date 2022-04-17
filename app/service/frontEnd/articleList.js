@@ -8,19 +8,21 @@ class articleList extends BaseService {
   // 查询所有数据
   async findAll(pageSize, pageNum, title, isClasses) {
     const result = await this._findAllBypage('Articlelist', pageSize, pageNum, title, isClasses);
+    // console.log(result);
     const content = '该文章暂无公开访问权限~';
     const list = result.rows.length ? result.rows.map(i => {
-      if (!i.isshow) {
+      const blogVal = i.dataValues;
+      if (!blogVal.isshow) {
         return {
-          ...i,
+          ...blogVal,
           content,
         };
       }
-      return i;
+      return blogVal;
     }) : [];
     const data = {
       list,
-      total: result.count,
+      total: result.rows.length,
       pageSize,
       pageNum,
     };
@@ -91,6 +93,17 @@ class articleList extends BaseService {
     if (!Array.isArray(result)) return '';
     return result;
   }
+  // getTagsList
+  async getTagsList() {
+    const tagsList = await this._findAll('Tags');
+    if (!Array.isArray(tagsList)) return '';
+    return tagsList;
+  }
+  // getTagsListdetail
+  async findAllBytag(pageSize, pageNum, id) {
+    return await this._findAllBypage_tag('ArtTag', pageSize, pageNum, id);
+  }
+
 }
 
 module.exports = articleList;
