@@ -19,4 +19,8 @@ module.exports = app => {
   router.post(`/${urlPrefix}/user/login`, controller.backEnd.user.login);
   router.put(`/${urlPrefix}/user/edit`, jwt, controller.backEnd.user.edit);
 
+
+  // 获取所有数据
+  router.post(`/${urlPrefix}/getAll`, jwt, controller.backEnd.getAll.getAll);
+
 };
